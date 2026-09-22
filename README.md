@@ -30,24 +30,6 @@ Wiki Walk is under active development. Current focus: scaffolding the WXT projec
 
 ---
 
-## 📦 Getting Started
-
-```bash
-# clone the repo
-git clone https://github.com/<your-username>/wiki-walk.git
-cd wiki-walk
-
-# install dependencies
-npm install
-
-# run in dev mode
-npm run dev
-```
-
-Then load the unpacked extension from the generated `.output/chrome-mv3` directory into Chrome via `chrome://extensions` (Developer Mode → Load unpacked).
-
----
-
 ## 📄 License
 
 MIT
