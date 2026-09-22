@@ -24,9 +24,33 @@ Built for curious wanderers and researchers alike: casual users get a fun, share
 
 ---
 
+## 📁 Project structure
+
+```
+entrypoints/
+  background.ts     # owns the walk session: appends footprints, toggles landmarks, resets
+  content.ts         # runs on wikipedia.org/wiki/* pages, reports each article visit
+  popup/              # toolbar popup: quick stats + "Open trail" / "Reset"
+  sidepanel/          # main trail view: list of footprints, retrace, export
+lib/
+  types.ts            # WalkNode / WalkSession data model
+  storage.ts          # reads/writes the active session in browser.storage.local
+  messaging.ts        # typed request/response protocol between UI and background
+```
+
+## 🧑‍💻 Development
+
+```
+npm install
+npm run dev       # launches Chrome with the extension loaded, with HMR
+npm run build     # production build, output in .output/chrome-mv3
+```
+
+---
+
 ## 🚧 Status
 
-Wiki Walk is under active development. Current focus: scaffolding the WXT project structure and building out the core trail-tracking and visualization pipeline.
+The WXT project is scaffolded and end-to-end tracking works: visiting Wikipedia articles builds a session in the background, and the popup/side panel read it live. The **footprints trail visualization** is still a plain ordered list — the winding path/footprint graphic is the next major piece to build, along with richer branch handling (currently a session is a single append-only path with no history-based reset).
 
 ---
 
