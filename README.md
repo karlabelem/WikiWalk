@@ -4,6 +4,8 @@
 
 Built for curious wanderers and researchers alike: casual users get a fun, shareable map of their browsing; researchers get a structured, exportable record of how they got from a question to an answer.
 
+![Wiki Walk side panel showing a branching trail diagram](docs/screenshot.png)
+
 ---
 
 ## ✨ Features
