@@ -32,7 +32,7 @@ function App() {
       <div className="flex gap-2">
         <button
           onClick={openTrail}
-          className="flex-1 rounded-md bg-green-700 px-3 py-2 text-sm font-medium text-white hover:bg-green-800"
+          className="flex-1 rounded-md bg-stone-900 px-3 py-2 text-sm font-medium text-white hover:bg-stone-800"
         >
           Open trail
         </button>

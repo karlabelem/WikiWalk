@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { onActiveSessionChange } from '@/lib/storage';
 import { sendWikiWalkMessage } from '@/lib/messaging';
 import { distanceWalked, landmarks, type WalkSession } from '@/lib/types';
+import { TrailDiagram } from './TrailDiagram';
 
 const RETRACE_STEP_MS = 900;
 
@@ -71,7 +72,7 @@ function App() {
         <button
           onClick={retraceSteps}
           disabled={session.nodes.length === 0}
-          className="flex-1 rounded-md bg-green-700 px-3 py-2 text-sm font-medium text-white hover:bg-green-800 disabled:opacity-40"
+          className="flex-1 rounded-md bg-stone-900 px-3 py-2 text-sm font-medium text-white hover:bg-stone-800 disabled:opacity-40"
         >
           Retrace steps
         </button>
@@ -84,41 +85,17 @@ function App() {
         </button>
       </div>
 
-      {/* TODO: replace this list with the footprints trail visualization */}
-      <ol className="space-y-2">
-        {session.nodes.map((node, i) => (
-          <li
-            key={node.id}
-            className={`flex items-center gap-2 rounded-md border p-2 text-sm transition-colors ${
-              retraceIndex === i
-                ? 'border-green-600 bg-green-50'
-                : 'border-stone-200 bg-white'
-            }`}
-          >
-            <span className="w-5 shrink-0 text-stone-400">{i + 1}</span>
-            <a
-              href={node.url}
-              target="_blank"
-              rel="noreferrer"
-              className="flex-1 truncate hover:underline"
-            >
-              {node.title}
-            </a>
-            <button
-              onClick={() => toggleLandmark(node.id)}
-              aria-label="Toggle landmark"
-              className={node.isLandmark ? 'text-yellow-500' : 'text-stone-300'}
-            >
-              ★
-            </button>
-          </li>
-        ))}
-        {session.nodes.length === 0 && (
-          <p className="text-sm text-stone-400">
-            Visit a Wikipedia article to start your walk.
-          </p>
-        )}
-      </ol>
+      {session.nodes.length === 0 ? (
+        <p className="text-sm text-stone-400">
+          Visit a Wikipedia article to start your walk.
+        </p>
+      ) : (
+        <TrailDiagram
+          nodes={session.nodes}
+          retraceIndex={retraceIndex}
+          onToggleLandmark={toggleLandmark}
+        />
+      )}
     </div>
   );
 }
