@@ -18,7 +18,13 @@ export interface WalkSession {
   startedAt: number;
   updatedAt: number;
   nodes: WalkNode[];
-  currentNodeId: string | null;
+  /**
+   * Each browser tab reads its own thread through the walk — a tab is
+   * "at" the node it last visited. Keyed by tab id rather than a single
+   * global pointer, so two Wikipedia tabs open at once don't interleave
+   * their navigation into one shared, scrambled cursor.
+   */
+  cursorByTabId: Record<number, string | null>;
 }
 
 export function createEmptySession(): WalkSession {
@@ -28,7 +34,7 @@ export function createEmptySession(): WalkSession {
     startedAt: now,
     updatedAt: now,
     nodes: [],
-    currentNodeId: null,
+    cursorByTabId: {},
   };
 }
 

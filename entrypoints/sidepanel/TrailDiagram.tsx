@@ -2,11 +2,7 @@ import type { WalkNode } from '@/lib/types';
 
 const ROW_HEIGHT = 52;
 const LANE_GAP = 22;
-const GUTTER_PADDING = 14;
-const STEP_SPACING = 11;
-const STEP_SIDE_OFFSET = 2.4;
-/** Keeps footsteps clear of the node dots at both ends of a connector. */
-const FOOT_MARGIN = 9;
+const GUTTER_PADDING = 10;
 
 interface LaidOutNode extends WalkNode {
   lane: number;
@@ -45,68 +41,6 @@ function layoutTrail(nodes: WalkNode[]): LaidOutNode[] {
 const laneX = (lane: number) => GUTTER_PADDING + lane * LANE_GAP;
 const rowY = (row: number) => row * ROW_HEIGHT + ROW_HEIGHT / 2;
 
-/** A shoe-sole silhouette (ball + heel, no toes) — reads as a shoe print at small sizes. */
-function Footstep({ x, y, angle, mirror }: { x: number; y: number; angle: number; mirror: boolean }) {
-  return (
-    <g transform={`translate(${x} ${y}) rotate(${angle}) scale(${mirror ? -1 : 1}, 1)`}>
-      <ellipse cx="0" cy="2.6" rx="2.5" ry="3" />
-      <ellipse cx="0" cy="-3" rx="2" ry="2.4" />
-    </g>
-  );
-}
-
-/** A trail of alternating left/right footsteps from (x1,y1) to (x2,y2), replacing a plain connector line. */
-function FootstepTrail({
-  x1,
-  y1,
-  x2,
-  y2,
-  className,
-}: {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  className: string;
-}) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const length = Math.hypot(dx, dy);
-  if (length < 1) return null;
-
-  const usableLength = length - FOOT_MARGIN * 2;
-  if (usableLength <= 0) return null;
-
-  const angleDeg = (Math.atan2(dx, dy) * 180) / Math.PI;
-  const ux = dx / length;
-  const uy = dy / length;
-  const px = -uy;
-  const py = ux;
-  const startT = FOOT_MARGIN / length;
-  const endT = 1 - FOOT_MARGIN / length;
-  const steps = Math.max(1, Math.round(usableLength / STEP_SPACING));
-
-  return (
-    <g className={className}>
-      {Array.from({ length: steps }, (_, i) => {
-        const t = startT + ((i + 0.5) / steps) * (endT - startT);
-        const cx = x1 + dx * t;
-        const cy = y1 + dy * t;
-        const side = i % 2 === 0 ? 1 : -1;
-        return (
-          <Footstep
-            key={i}
-            x={cx + px * STEP_SIDE_OFFSET * side}
-            y={cy + py * STEP_SIDE_OFFSET * side}
-            angle={angleDeg}
-            mirror={side < 0}
-          />
-        );
-      })}
-    </g>
-  );
-}
-
 export function TrailDiagram({
   nodes,
   retraceIndex,
@@ -124,36 +58,39 @@ export function TrailDiagram({
 
   return (
     <div className="relative" style={{ height: diagramHeight }}>
-      <svg
-        width={gutterWidth}
-        height={diagramHeight}
-        className="absolute left-0 top-0 fill-stone-300"
-      >
+      <svg width={gutterWidth} height={diagramHeight} className="absolute left-0 top-0">
         {laidOut.map((node, i) => {
           if (i === 0) return null;
-          const isActiveSegment = retraceIndex !== null && retraceIndex >= i;
-          const segmentClassName = isActiveSegment ? 'fill-indigo-400' : 'fill-stone-300';
+          const isActive = retraceIndex !== null && retraceIndex >= i;
+          const strokeClassName = isActive ? 'stroke-indigo-400' : 'stroke-stone-300';
+
           if (node.forkFromLane !== null) {
             const parentRow = rowById.get(node.parentId!)!;
+            const x1 = laneX(node.forkFromLane);
+            const y1 = rowY(parentRow);
+            const x2 = laneX(node.lane);
+            const y2 = rowY(i);
+            const midY = (y1 + y2) / 2;
             return (
-              <FootstepTrail
+              <path
                 key={node.id}
-                x1={laneX(node.forkFromLane)}
-                y1={rowY(parentRow)}
-                x2={laneX(node.lane)}
-                y2={rowY(i)}
-                className={segmentClassName}
+                d={`M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`}
+                fill="none"
+                strokeWidth={1.5}
+                className={strokeClassName}
               />
             );
           }
+
           return (
-            <FootstepTrail
+            <line
               key={node.id}
               x1={laneX(node.lane)}
               y1={rowY(i - 1)}
               x2={laneX(node.lane)}
               y2={rowY(i)}
-              className={segmentClassName}
+              strokeWidth={1.5}
+              className={strokeClassName}
             />
           );
         })}

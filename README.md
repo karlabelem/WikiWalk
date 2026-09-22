@@ -8,7 +8,7 @@ Built for curious wanderers and researchers alike: casual users get a fun, share
 
 ## ✨ Features
 
-- **Footprints trail view** — your browsing history rendered as a winding, animated path rather than a static graph
+- **Footprints trail view** — your browsing history rendered as a branching tree diagram: going back and clicking a different link forks a new branch instead of forcing everything into one line
 - **Distance walked** — track how many articles and links you've traversed in a session
 - **Landmarks** — pin key articles along your walk to mark sources that actually mattered
 - **Retrace your steps** — replay your path in order, article by article
@@ -31,7 +31,8 @@ entrypoints/
   background.ts     # owns the walk session: appends footprints, toggles landmarks, resets
   content.ts         # runs on wikipedia.org/wiki/* pages, reports each article visit
   popup/              # toolbar popup: quick stats + "Open trail" / "Reset"
-  sidepanel/          # main trail view: list of footprints, retrace, export
+  sidepanel/          # main trail view: branching tree diagram, retrace, export
+    TrailDiagram.tsx  # tree layout + branch rendering
 lib/
   types.ts            # WalkNode / WalkSession data model
   storage.ts          # reads/writes the active session in browser.storage.local
@@ -50,7 +51,9 @@ npm run build     # production build, output in .output/chrome-mv3
 
 ## 🚧 Status
 
-The WXT project is scaffolded and end-to-end tracking works: visiting Wikipedia articles builds a session in the background, and the popup/side panel read it live. The **footprints trail visualization** is still a plain ordered list — the winding path/footprint graphic is the next major piece to build, along with richer branch handling (currently a session is a single append-only path with no history-based reset).
+End-to-end tracking, the branching trail diagram, landmarks, retrace playback, and Markdown export are all working. The walk's current position is tracked per browser tab, and revisiting an already-walked article (e.g. via the browser's back button) correctly resumes from that existing node so new clicks fork off the real waypoint instead of duplicating it.
+
+Not yet handled: forward navigation and manually closing/reopening tabs aren't specifically accounted for, and there's no way to start a second, separate walk without resetting the current one.
 
 ---
 
